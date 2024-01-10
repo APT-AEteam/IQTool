@@ -41,6 +41,11 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.SerialPortCbx = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.ModelGbx = new System.Windows.Forms.GroupBox();
+            this.ReadModelBtn = new System.Windows.Forms.Button();
+            this.SetModelBtn = new System.Windows.Forms.Button();
+            this.ReadBackTbx = new System.Windows.Forms.TextBox();
+            this.ModelTbx = new System.Windows.Forms.TextBox();
             this.ReadGbx = new System.Windows.Forms.GroupBox();
             this.PauseBtn = new System.Windows.Forms.Button();
             this.StartBtn = new System.Windows.Forms.Button();
@@ -84,6 +89,7 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.NavigationToolStrip.SuspendLayout();
+            this.ModelGbx.SuspendLayout();
             this.ReadGbx.SuspendLayout();
             this.TestmodeGbx.SuspendLayout();
             this.TimeIntervalGbx.SuspendLayout();
@@ -107,9 +113,9 @@
             // StatusStrip
             // 
             this.StatusStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
-            this.StatusStrip.Location = new System.Drawing.Point(0, 597);
+            this.StatusStrip.Location = new System.Drawing.Point(0, 739);
             this.StatusStrip.Name = "StatusStrip";
-            this.StatusStrip.Size = new System.Drawing.Size(1295, 22);
+            this.StatusStrip.Size = new System.Drawing.Size(1309, 22);
             this.StatusStrip.TabIndex = 9;
             // 
             // MenuStrip
@@ -119,7 +125,7 @@
             this.MenuStrip.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip.Name = "MenuStrip";
             this.MenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.MenuStrip.Size = new System.Drawing.Size(1295, 25);
+            this.MenuStrip.Size = new System.Drawing.Size(1309, 25);
             this.MenuStrip.TabIndex = 12;
             this.MenuStrip.Text = "menuStrip1";
             // 
@@ -153,8 +159,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Controls.Add(this.Splitter);
-            this.splitContainer1.Size = new System.Drawing.Size(1295, 572);
-            this.splitContainer1.SplitterDistance = 242;
+            this.splitContainer1.Size = new System.Drawing.Size(1309, 714);
+            this.splitContainer1.SplitterDistance = 243;
             this.splitContainer1.TabIndex = 14;
             // 
             // BoardSidePanel
@@ -164,7 +170,7 @@
             this.BoardSidePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BoardSidePanel.Location = new System.Drawing.Point(0, 0);
             this.BoardSidePanel.Name = "BoardSidePanel";
-            this.BoardSidePanel.Size = new System.Drawing.Size(238, 568);
+            this.BoardSidePanel.Size = new System.Drawing.Size(239, 710);
             this.BoardSidePanel.TabIndex = 0;
             // 
             // splitContainer2
@@ -181,14 +187,15 @@
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.ModelGbx);
             this.splitContainer2.Panel2.Controls.Add(this.ReadGbx);
             this.splitContainer2.Panel2.Controls.Add(this.TestmodeGbx);
             this.splitContainer2.Panel2.Controls.Add(this.TimeIntervalGbx);
             this.splitContainer2.Panel2.Controls.Add(this.StatusLabel);
             this.splitContainer2.Panel2.Controls.Add(this.ChipAddressGbx);
             this.splitContainer2.Panel2.Controls.Add(this.RangeGbx);
-            this.splitContainer2.Size = new System.Drawing.Size(234, 564);
-            this.splitContainer2.SplitterDistance = 33;
+            this.splitContainer2.Size = new System.Drawing.Size(235, 706);
+            this.splitContainer2.SplitterDistance = 41;
             this.splitContainer2.TabIndex = 0;
             // 
             // NavigationToolStrip
@@ -200,7 +207,7 @@
             this.ToolStripSeparator});
             this.NavigationToolStrip.Location = new System.Drawing.Point(0, 0);
             this.NavigationToolStrip.Name = "NavigationToolStrip";
-            this.NavigationToolStrip.Size = new System.Drawing.Size(232, 31);
+            this.NavigationToolStrip.Size = new System.Drawing.Size(233, 39);
             this.NavigationToolStrip.TabIndex = 0;
             this.NavigationToolStrip.Text = "toolStrip1";
             // 
@@ -210,27 +217,83 @@
             this.toolStripLabel1.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
             this.toolStripLabel1.Image = global::TempTool.Properties.Resources.USB;
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(16, 28);
+            this.toolStripLabel1.Size = new System.Drawing.Size(16, 36);
             this.toolStripLabel1.Text = "串口";
             // 
             // SerialPortCbx
             // 
             this.SerialPortCbx.Name = "SerialPortCbx";
-            this.SerialPortCbx.Size = new System.Drawing.Size(86, 31);
+            this.SerialPortCbx.Size = new System.Drawing.Size(86, 39);
             this.SerialPortCbx.DropDown += new System.EventHandler(this.SerialPortCbx_DropDown);
             this.SerialPortCbx.SelectedIndexChanged += new System.EventHandler(this.SerialPortCbx_SelectedIndexChanged);
             // 
             // ToolStripSeparator
             // 
             this.ToolStripSeparator.Name = "ToolStripSeparator";
-            this.ToolStripSeparator.Size = new System.Drawing.Size(6, 31);
+            this.ToolStripSeparator.Size = new System.Drawing.Size(6, 39);
+            // 
+            // ModelGbx
+            // 
+            this.ModelGbx.Controls.Add(this.ReadModelBtn);
+            this.ModelGbx.Controls.Add(this.SetModelBtn);
+            this.ModelGbx.Controls.Add(this.ReadBackTbx);
+            this.ModelGbx.Controls.Add(this.ModelTbx);
+            this.ModelGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ModelGbx.Location = new System.Drawing.Point(3, 291);
+            this.ModelGbx.Name = "ModelGbx";
+            this.ModelGbx.Size = new System.Drawing.Size(226, 99);
+            this.ModelGbx.TabIndex = 20;
+            this.ModelGbx.TabStop = false;
+            this.ModelGbx.Text = "芯片型号";
+            // 
+            // ReadModelBtn
+            // 
+            this.ReadModelBtn.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.ReadModelBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ReadModelBtn.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ReadModelBtn.Location = new System.Drawing.Point(3, 62);
+            this.ReadModelBtn.Name = "ReadModelBtn";
+            this.ReadModelBtn.Size = new System.Drawing.Size(86, 32);
+            this.ReadModelBtn.TabIndex = 17;
+            this.ReadModelBtn.Text = "回读型号";
+            this.ReadModelBtn.UseVisualStyleBackColor = false;
+            this.ReadModelBtn.Click += new System.EventHandler(this.ReadModelBtn_Click);
+            // 
+            // SetModelBtn
+            // 
+            this.SetModelBtn.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.SetModelBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.SetModelBtn.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.SetModelBtn.Location = new System.Drawing.Point(4, 27);
+            this.SetModelBtn.Name = "SetModelBtn";
+            this.SetModelBtn.Size = new System.Drawing.Size(86, 32);
+            this.SetModelBtn.TabIndex = 16;
+            this.SetModelBtn.Text = "设置型号";
+            this.SetModelBtn.UseVisualStyleBackColor = false;
+            this.SetModelBtn.Click += new System.EventHandler(this.SetModel);
+            // 
+            // ReadBackTbx
+            // 
+            this.ReadBackTbx.Location = new System.Drawing.Point(118, 66);
+            this.ReadBackTbx.Name = "ReadBackTbx";
+            this.ReadBackTbx.Size = new System.Drawing.Size(100, 26);
+            this.ReadBackTbx.TabIndex = 11;
+            // 
+            // ModelTbx
+            // 
+            this.ModelTbx.Location = new System.Drawing.Point(118, 31);
+            this.ModelTbx.Name = "ModelTbx";
+            this.ModelTbx.Size = new System.Drawing.Size(100, 26);
+            this.ModelTbx.TabIndex = 0;
+            this.ModelTbx.Text = "0x32F10230";
+            this.ModelTbx.TextChanged += new System.EventHandler(this.ModelTbx_TextChanged);
             // 
             // ReadGbx
             // 
             this.ReadGbx.Controls.Add(this.PauseBtn);
             this.ReadGbx.Controls.Add(this.StartBtn);
             this.ReadGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ReadGbx.Location = new System.Drawing.Point(8, 357);
+            this.ReadGbx.Location = new System.Drawing.Point(7, 491);
             this.ReadGbx.Name = "ReadGbx";
             this.ReadGbx.Size = new System.Drawing.Size(220, 69);
             this.ReadGbx.TabIndex = 19;
@@ -269,7 +332,7 @@
             this.TestmodeGbx.Controls.Add(this.ExitTestmodeBtn);
             this.TestmodeGbx.Controls.Add(this.EnterTestmodeBtn);
             this.TestmodeGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TestmodeGbx.Location = new System.Drawing.Point(8, 292);
+            this.TestmodeGbx.Location = new System.Drawing.Point(7, 418);
             this.TestmodeGbx.Name = "TestmodeGbx";
             this.TestmodeGbx.Size = new System.Drawing.Size(220, 67);
             this.TestmodeGbx.TabIndex = 18;
@@ -374,7 +437,7 @@
             this.StatusLabel.AutoSize = true;
             this.StatusLabel.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.StatusLabel.Font = new System.Drawing.Font("楷体", 68F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.StatusLabel.Location = new System.Drawing.Point(3, 429);
+            this.StatusLabel.Location = new System.Drawing.Point(3, 563);
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(225, 91);
             this.StatusLabel.TabIndex = 16;
@@ -475,7 +538,7 @@
             this.StartNumber.TabIndex = 6;
             this.StartNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.StartNumber.Value = new decimal(new int[] {
-            66,
+            77,
             0,
             0,
             0});
@@ -500,7 +563,7 @@
             this.EndNumber.TabIndex = 11;
             this.EndNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.EndNumber.Value = new decimal(new int[] {
-            69,
+            77,
             0,
             0,
             0});
@@ -523,7 +586,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1042, 568);
+            this.panel1.Size = new System.Drawing.Size(1055, 710);
             this.panel1.TabIndex = 13;
             // 
             // splitContainer3
@@ -539,8 +602,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.WarnTbCtl);
-            this.splitContainer3.Size = new System.Drawing.Size(1040, 566);
-            this.splitContainer3.SplitterDistance = 666;
+            this.splitContainer3.Size = new System.Drawing.Size(1053, 708);
+            this.splitContainer3.SplitterDistance = 673;
             this.splitContainer3.TabIndex = 0;
             // 
             // TestTbCtl
@@ -551,7 +614,7 @@
             this.TestTbCtl.Location = new System.Drawing.Point(0, 0);
             this.TestTbCtl.Name = "TestTbCtl";
             this.TestTbCtl.SelectedIndex = 0;
-            this.TestTbCtl.Size = new System.Drawing.Size(666, 566);
+            this.TestTbCtl.Size = new System.Drawing.Size(673, 708);
             this.TestTbCtl.TabIndex = 0;
             // 
             // SchePage
@@ -560,7 +623,7 @@
             this.SchePage.Location = new System.Drawing.Point(4, 22);
             this.SchePage.Name = "SchePage";
             this.SchePage.Padding = new System.Windows.Forms.Padding(3);
-            this.SchePage.Size = new System.Drawing.Size(658, 540);
+            this.SchePage.Size = new System.Drawing.Size(665, 682);
             this.SchePage.TabIndex = 0;
             this.SchePage.Text = "进度";
             this.SchePage.UseVisualStyleBackColor = true;
@@ -572,7 +635,7 @@
             this.LogPage.Location = new System.Drawing.Point(4, 22);
             this.LogPage.Name = "LogPage";
             this.LogPage.Padding = new System.Windows.Forms.Padding(3);
-            this.LogPage.Size = new System.Drawing.Size(658, 540);
+            this.LogPage.Size = new System.Drawing.Size(665, 682);
             this.LogPage.TabIndex = 1;
             this.LogPage.Text = "串口日志";
             this.LogPage.UseVisualStyleBackColor = true;
@@ -582,7 +645,7 @@
             this.PortRecordRtbx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PortRecordRtbx.Location = new System.Drawing.Point(3, 3);
             this.PortRecordRtbx.Name = "PortRecordRtbx";
-            this.PortRecordRtbx.Size = new System.Drawing.Size(648, 530);
+            this.PortRecordRtbx.Size = new System.Drawing.Size(655, 672);
             this.PortRecordRtbx.TabIndex = 0;
             this.PortRecordRtbx.Text = "";
             // 
@@ -593,7 +656,7 @@
             this.WarnTbCtl.Location = new System.Drawing.Point(0, 0);
             this.WarnTbCtl.Name = "WarnTbCtl";
             this.WarnTbCtl.SelectedIndex = 0;
-            this.WarnTbCtl.Size = new System.Drawing.Size(370, 566);
+            this.WarnTbCtl.Size = new System.Drawing.Size(376, 708);
             this.WarnTbCtl.TabIndex = 0;
             // 
             // tabPage3
@@ -602,7 +665,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(362, 540);
+            this.tabPage3.Size = new System.Drawing.Size(368, 682);
             this.tabPage3.TabIndex = 0;
             this.tabPage3.Text = "消息记录";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -615,7 +678,7 @@
             this.ErrorLogRtbx.Location = new System.Drawing.Point(3, 3);
             this.ErrorLogRtbx.Name = "ErrorLogRtbx";
             this.ErrorLogRtbx.ReadOnly = true;
-            this.ErrorLogRtbx.Size = new System.Drawing.Size(356, 534);
+            this.ErrorLogRtbx.Size = new System.Drawing.Size(362, 676);
             this.ErrorLogRtbx.TabIndex = 0;
             this.ErrorLogRtbx.Text = "";
             // 
@@ -623,7 +686,7 @@
             // 
             this.Splitter.Location = new System.Drawing.Point(0, 0);
             this.Splitter.Name = "Splitter";
-            this.Splitter.Size = new System.Drawing.Size(3, 568);
+            this.Splitter.Size = new System.Drawing.Size(3, 710);
             this.Splitter.TabIndex = 12;
             this.Splitter.TabStop = false;
             // 
@@ -631,7 +694,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1295, 619);
+            this.ClientSize = new System.Drawing.Size(1309, 761);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.MenuStrip);
@@ -656,6 +719,8 @@
             this.splitContainer2.ResumeLayout(false);
             this.NavigationToolStrip.ResumeLayout(false);
             this.NavigationToolStrip.PerformLayout();
+            this.ModelGbx.ResumeLayout(false);
+            this.ModelGbx.PerformLayout();
             this.ReadGbx.ResumeLayout(false);
             this.TestmodeGbx.ResumeLayout(false);
             this.TimeIntervalGbx.ResumeLayout(false);
@@ -727,6 +792,11 @@
         private System.Windows.Forms.GroupBox ReadGbx;
         private System.Windows.Forms.Button ExitTestmodeBtn;
         private System.Windows.Forms.Button EnterTestmodeBtn;
+        private System.Windows.Forms.GroupBox ModelGbx;
+        private System.Windows.Forms.TextBox ReadBackTbx;
+        private System.Windows.Forms.TextBox ModelTbx;
+        private System.Windows.Forms.Button SetModelBtn;
+        private System.Windows.Forms.Button ReadModelBtn;
     }
 }
 

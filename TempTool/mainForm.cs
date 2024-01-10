@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -309,10 +310,12 @@ namespace IQT
             TestDone = false;
             string errMsg = string.Empty; 
             byte[] cmd;
-            //byte[] address = new byte[4] { 0x20, 0x00, 0x02, 0x00 };
-            //byte[] address = new byte[4] { 0x00, 0x00, 0x00, 0x00 };
             cmd = PackCmd(OperaType.READ, ReadAddress);
-            port.SendData(cmd,ref errMsg);
+            port.SendData(cmd, ref errMsg);
+            //Task task = new Task(() =>
+            //{
+            //});
+            //task.RunSynchronously();
         }
         void SendWriteCMD()
         {
@@ -320,7 +323,11 @@ namespace IQT
             string errMsg = string.Empty; 
             byte[] cmd;
             cmd = PackCmd(OperaType.WRITE, WriteAddress);
-            port.SendData(cmd,ref errMsg);
+            port.SendData(cmd, ref errMsg);
+            //Task task = new Task(() =>
+            //{
+            //});
+            //task.RunSynchronously();
         }
 
         void UpdatePortRecord(StrTypeEnum type,byte[] cmd)
@@ -347,6 +354,7 @@ namespace IQT
                 {
                     this.Invoke(new Action(() =>
                     {
+                        if(boardNumberQueue == null) { return; }
                         currentNumber = boardNumberQueue.Dequeue();
                         ErrorLogRtbx.AppendText(string.Format("[{0}]板卡{1} {2}{3}",DateTime.Now.ToString(), currentNumber.ToString(), str, "\r\n"));
                     }));
@@ -365,6 +373,12 @@ namespace IQT
                 {
                     this.Invoke(new Action(() =>
                     {
+                        if (boardNumberQueue == null)
+                            return;
+                        if (boardNumberQueue.Count == 0)
+                        {
+                            return;
+                        }
                         currentNumber = boardNumberQueue.Dequeue();
 
                         int offset = (int)(currentNumber - startNumber);
@@ -384,13 +398,13 @@ namespace IQT
                         {
                             string errTypeStr = string.Empty;
                             string errDateTimeStr = string.Empty;
-                            foreach (var item in TestInfo.ROMErrDict)
+                            foreach (var item in testInfo.ROMErrDict)
                             {
                                 errTypeStr += item.Key + "\r\n";
                                 errDateTimeStr += item.Value.ToString() + "\r\n";
                             }
                             gridView.Rows[1 + offset * 4].Cells[2].Value = errTypeStr.Trim('\n').Trim('\r');
-                            gridView.Rows[3 + offset * 4].Cells[3].Value = errDateTimeStr.Trim('\n').Trim('\r');
+                            //gridView.Rows[1 + offset * 4].Cells[3].Value = errDateTimeStr.Trim('\n').Trim('\r');
                             gridView.Rows[1 + offset * 4].Cells[3].Value = string.Format("{0}\r\n{1}", DateTime.MaxValue == TestInfo.PROMExceptionFirstTime ? string.Empty : TestInfo.PROMExceptionFirstTime.ToString(), DateTime.MaxValue == TestInfo.DROMExceptionFirstTime ? string.Empty : TestInfo.DROMExceptionFirstTime.ToString());
                         }
                         gridView.Rows[1 + offset * 4].Cells[4].Value = testInfo.ROM.Exception ? "FAIL" : "PASS";
@@ -398,7 +412,7 @@ namespace IQT
                         gridView.Rows[1 + offset * 4].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                         //TRIM
                         gridView.Rows[2 + offset * 4].Cells[1].Value = "TRIM";
-                        gridView.Rows[2 + offset * 4].Cells[2].Value = testInfo.TRIM.Exception?string.Format("VALUE:0x{0}", testInfo.TRIMValue.ToString("X2")):string.Empty;
+                        gridView.Rows[2 + offset * 4].Cells[2].Value = testInfo.TRIM.Exception?string.Format("VALUE:0x{0}", testInfo.TRIMValue.ToString("X2").PadLeft(8,'0')):string.Empty;
                         if(testInfo.TRIM.Exception)
                             gridView.Rows[2 + offset * 4].Cells[3].Value = TestInfo.TRIMExceptionFirstTime.ToString();
                         gridView.Rows[2 + offset * 4].Cells[4].Value = testInfo.TRIM.Exception ? "FAIL" : "PASS";
@@ -409,7 +423,7 @@ namespace IQT
                         {
                             string errTypeStr = string.Empty;
                             string errDateTimeStr = string.Empty;
-                            foreach (var item in TestInfo.IPErrDict)
+                            foreach (var item in testInfo.IPErrDict)
                             {
                                 errTypeStr += item.Key + "\r\n";
                                 errDateTimeStr += item.Value.ToString() + "\r\n";
@@ -448,31 +462,34 @@ namespace IQT
             RESERVED = 0x0,
             READ = 0x1,
             WRITE = 0x2,
+            SETMODEL = 0x3,
+            READMODEL =0x4,
             REPOST = 0x5,
         }
 
-        byte[] PackCmd(OperaType opera, byte[] content)
+        byte[] PackCmd(OperaType opera, byte[] address)
         {
             byte[] cmdBytes = null;
+            int dataLength;
             switch(opera) {
                 case OperaType.READ:
                     cmdBytes = new byte[11];
                     cmdBytes[0] = FrameHeader[0];
                     cmdBytes[1] = FrameHeader[1];
                     cmdBytes[2] = (byte)OperaType.READ;
-                    content.CopyTo(cmdBytes, 3);
+                    address.CopyTo(cmdBytes, 3);
                     cmdBytes[7] = (byte)0x04;
                     cmdBytes[8] = FrameEnd[0];
                     cmdBytes[9] = FrameEnd[1];
                     cmdBytes = CalcCheckSum(cmdBytes);
                     break;
                 case OperaType.WRITE:
-                    int dataLength = content.Length;
-                    cmdBytes = new byte[14];
+                    dataLength = address.Length;
+                    cmdBytes = new byte[15];
                     cmdBytes[0] = FrameHeader[0];
                     cmdBytes[1] = FrameHeader[1];
-                    cmdBytes[2] = (byte)OperaType.READ;
-                    content.CopyTo(cmdBytes, 3);
+                    cmdBytes[2] = (byte)OperaType.WRITE;
+                    address.CopyTo(cmdBytes, 3);
                     cmdBytes[7] = (byte)0x04;
                     cmdBytes[8] = ModeFrame[0];
                     cmdBytes[9] = ModeFrame[1];
@@ -482,15 +499,32 @@ namespace IQT
                     cmdBytes[13] = FrameEnd[1];
                     cmdBytes = CalcCheckSum(cmdBytes);
                     break;
+                case OperaType.SETMODEL:
+                    dataLength = address.Length;
+                    cmdBytes = new byte[15];
+                    cmdBytes[0] = FrameHeader[0];
+                    cmdBytes[1] = FrameHeader[1];
+                    cmdBytes[2] = (byte)OperaType.SETMODEL;
+                    cmdBytes[3] = (byte)0x00;
+                    cmdBytes[4] = (byte)0x00;
+                    cmdBytes[5] = (byte)0x00;
+                    cmdBytes[6] = (byte)0x00;
+                    cmdBytes[7] = (byte)dataLength;
+                    address.CopyTo(cmdBytes, 8);
+                    cmdBytes[12] = FrameEnd[0];
+                    cmdBytes[13] = FrameEnd[1];
+                    cmdBytes = CalcCheckSum(cmdBytes);
+
+                    break;
                 case OperaType.REPOST:
                     cmdBytes = new byte[17];
                     cmdBytes[0] = FrameHeader[0];
                     cmdBytes[1] = FrameHeader[1];
                     cmdBytes[2] = (byte)opera;
-                    cmdBytes[7] = (byte)content.Length;
-                    content.CopyTo(cmdBytes, 8);
-                    cmdBytes[content.Length + 8] = FrameEnd[0];
-                    cmdBytes[content.Length + 9] = FrameEnd[1];
+                    cmdBytes[7] = (byte)address.Length;
+                    address.CopyTo(cmdBytes, 8);
+                    cmdBytes[address.Length + 8] = FrameEnd[0];
+                    cmdBytes[address.Length + 9] = FrameEnd[1];
                     cmdBytes = CalcCheckSum(cmdBytes);
                     break;
             }
@@ -631,6 +665,7 @@ namespace IQT
             for (uint i = startNumber; i <= endNumber; i++)
             {
                 OpenPort(i);
+                Thread.Sleep(200);
                 SendReadCMD();
             }
             testFlag = false;
@@ -679,6 +714,7 @@ namespace IQT
                 if (null == gridView.Rows[i].Cells[3].Value)
                 {
                     gridView.Rows[i].Cells[5].Value = "PASS";
+                    gridView.Rows[i].Cells[5].Style.BackColor = Color.GreenYellow;
                 }
                 else
                 {
@@ -781,10 +817,17 @@ namespace IQT
 
         private void EnterTestmode(object sender, EventArgs e)
         {
-            ModeFrame = new byte[4]{ 0x55, 0xAA, 0x66, 0xBB };
+            ModeFrame = new byte[4] { 0x55, 0xAA, 0x66, 0xBB };
+            //boardNumberQueue = new Queue<uint>();
+            //for (uint i = startNumber; i <= endNumber; i++)
+            //{
+            //    boardNumberQueue.Enqueue(i);
+            //}
+
             for (uint i = startNumber; i <= endNumber; i++)
             {
                 OpenPort(i);
+                Thread.Sleep(200);
                 SendWriteCMD();
             }
         }
@@ -792,9 +835,16 @@ namespace IQT
         private void ExitTestmodeBtn_Click(object sender, EventArgs e)
         {
             ModeFrame = new byte[4]{ 0x00, 0x00, 0x00, 0x00 };
+            boardNumberQueue = new Queue<uint>();
+            for (uint i = startNumber; i <= endNumber; i++)
+            {
+                boardNumberQueue.Enqueue(i);
+            }
+
             for (uint i = startNumber; i <= endNumber; i++)
             {
                 OpenPort(i);
+                Thread.Sleep(200);
                 SendWriteCMD();
             }
         }
@@ -810,6 +860,36 @@ namespace IQT
 
             Dispose();
             System.Environment.Exit(0);
+        }
+
+        private static byte[] setModel = new byte[4] {  0x00, 0x00, 0x00, 0x00 };
+        private void ModelTbx_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(ModelTbx.Text.Trim()))
+                return;
+            string modelStr = ModelTbx.Text.Trim();
+            string pattern = @"^0x[A-Fa-f0-9]+$";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(modelStr, pattern))
+            {
+                ModelTbx.Text="0x";
+                return;
+            }
+            modelStr = ModelTbx.Text.Trim().Substring(2).PadRight(8, '0');
+            byte[] model = HexStrToBytes(modelStr);
+            setModel = model;
+        }
+
+        private void SetModel(object sender, EventArgs e)
+        {
+            string errMsg = string.Empty;
+            byte[] cmd;
+            cmd = PackCmd(OperaType.SETMODEL, setModel);
+            port.SendData(cmd, ref errMsg);
+        }
+
+        private void ReadModelBtn_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

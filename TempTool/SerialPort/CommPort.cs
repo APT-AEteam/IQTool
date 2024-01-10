@@ -149,7 +149,7 @@ namespace CommPort
             byte dataLength = ReadBuffer[7];//返回数据长度
             if (0x00 != dataLength)
             {
-                byte[] readBack = ReadBuffer.Skip(8).Take(dataLength).ToArray();
+                byte[] readBack = ReadBuffer.Skip(8).Take(dataLength).Reverse().ToArray();
                 Monitor.Enter(lockObj);
                 DecodeExpection(readBack);
                 UpdateStatus(TestResult, result);
@@ -177,13 +177,15 @@ namespace CommPort
         void DecodeExpection(byte[] value)
         {
             result = new TestInfo();
-            result.TRIMValue = (UInt32.Parse(ByteToHexStr(value), NumberStyles.HexNumber) >> 13) & 0x3ffff;
+            UInt32 exceptValue = UInt32.Parse(ByteToHexStr(value), NumberStyles.HexNumber);
+            Console.WriteLine( string.Format("Value: 0x{0}", exceptValue.ToString("X2")));
+            result.TRIMValue = (UInt32.Parse(ByteToHexStr(value), NumberStyles.HexNumber) >> 0) & 0x1ffff800;
             if (result.TRIMValue != 0)
             {
-                IQT.mainForm.TrimFirstExceptionTime = DateTime.Now;
+                //IQT.mainForm.TrimFirstExceptionTime = DateTime.Now;
                 TestInfo.TRIMExceptionFirstTime = DateTime.Now;
             }
-            result.IPValue = (UInt32.Parse(ByteToHexStr(value), NumberStyles.HexNumber)) & 0x27f;
+            result.IPValue = (UInt32.Parse(ByteToHexStr(value), NumberStyles.HexNumber)) & 0x7ff;
             if((result.IPValue != 0))
             {
                 TestInfo.IPExceptionFirstTime = DateTime.Now;
@@ -199,17 +201,24 @@ namespace CommPort
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.EFLASH % 8)))
                             {
                                 result.EFLASH.Exception = true;
-                                //result.EFLASH.FirstTime = DateTime.Now;
                                 TestInfo.EFLASHExceptionFirstTime = DateTime.Now;
                                 IQT.mainForm.EFLASHFirstExceptionTime = DateTime.Now;
                             }
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.RESERVED2 % 8)))
+                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.PROM_READ % 8)))
                             {
-                                ;
+                                result.ROM.Exception = true;
+                                if (!result.ROMErrDict.ContainsKey("PROM"))
+                                    result.ROMErrDict.Add("PROM", DateTime.Now);
+                                TestInfo.PROMExceptionFirstTime = DateTime.Now;
+                                //result.ROM.FirstTime = DateTime.Now;
                             }
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.RESERVED1 % 8)))
+                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.DROM_READ % 8)))
                             {
-                                ;
+                                result.ROM.Exception = true;
+                                if (!result.ROMErrDict.ContainsKey("DROM"))
+                                    result.ROMErrDict.Add("DROM", DateTime.Now);
+                                TestInfo.DROMExceptionFirstTime = DateTime.Now;
+                                //result.ROM.FirstTime = DateTime.Now;
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.OPAP % 8)))
                             {
@@ -223,6 +232,8 @@ namespace CommPort
                             {
                                 result.TRIM.Exception = true;
                             }
+                            break;
+                        case 1:
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.CP3 % 8)))
                             {
                                 result.TRIM.Exception = true;
@@ -231,8 +242,6 @@ namespace CommPort
                             {
                                 result.TRIM.Exception = true;
                             }
-                            break;
-                        case 1:
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.FCP % 8)))
                             {
                                 result.TRIM.Exception = true;
@@ -257,6 +266,8 @@ namespace CommPort
                             {
                                 result.TRIM.Exception = true;
                             }
+                            break;
+                        case 2:
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.HF_EF % 8)))
                             {
                                 result.TRIM.Exception = true;
@@ -265,8 +276,6 @@ namespace CommPort
                             {
                                 result.TRIM.Exception = true;
                             }
-                            break;
-                        case 2:
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.BGR_CMR % 8)))
                             {
                                 result.TRIM.Exception = true;
@@ -279,95 +288,69 @@ namespace CommPort
                             {
                                 result.TRIM.Exception = true;
                             }
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.PROM_WRITE % 8)))
-                            {
-                                ;
-                            }
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.DROM_WRITE % 8)))
-                            {
-                                ;
-                            }
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.RESERVED0 % 8)))
-                            {
-                                ;
-                            }
+                            break;
+                        case 3:
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.CAN % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("CAN"))
-                                    TestInfo.IPErrDict.Add("CAN", DateTime.Now);
-                            }
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.PROM_READ % 8)))
-                            {
-                                result.ROM.Exception = true;
-                                if (!TestInfo.ROMErrDict.ContainsKey("PROM"))
-                                    TestInfo.ROMErrDict.Add("PROM", DateTime.Now);
-                                TestInfo.PROMExceptionFirstTime = DateTime.Now;
-                                //result.ROM.FirstTime = DateTime.Now;
-                            }
-                            break;
-                        case 3:
-                            if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.DROM_READ % 8)))
-                            {
-                                result.ROM.Exception = true;
-                                if (!TestInfo.ROMErrDict.ContainsKey("DROM"))
-                                    TestInfo.ROMErrDict.Add("DROM", DateTime.Now);
-                                TestInfo.DROMExceptionFirstTime = DateTime.Now;
-                                //result.ROM.FirstTime = DateTime.Now;
+                                if(!result.IPErrDict.ContainsKey("CAN"))
+                                    result.IPErrDict.Add("CAN", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.RTC % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("RTC"))
-                                    TestInfo.IPErrDict.Add("RTC", DateTime.Now);
+                                if(!result.IPErrDict.ContainsKey("RTC"))
+                                    result.IPErrDict.Add("RTC", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.LPT % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("LPT"))
-                                    TestInfo.IPErrDict.Add("LPT", DateTime.Now);
+                                if(!result.IPErrDict.ContainsKey("LPT"))
+                                    result.IPErrDict.Add("LPT", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.BT % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("BT"))
-                                    TestInfo.IPErrDict.Add("BT", DateTime.Now);
+                                if(!result.IPErrDict.ContainsKey("BT"))
+                                    result.IPErrDict.Add("BT", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.GPIO % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("GPIO"))
-                                    TestInfo.IPErrDict.Add("GPIO", DateTime.Now);
+                                if(!result.IPErrDict.ContainsKey("GPIO"))
+                                    result.IPErrDict.Add("GPIO", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.USART % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("USART"))
-                                    TestInfo.IPErrDict.Add("USART", DateTime.Now);
+                                if(!result.IPErrDict.ContainsKey("USART"))
+                                    result.IPErrDict.Add("USART", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.UART % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if(!TestInfo.IPErrDict.ContainsKey("UART"))
-                                    TestInfo.IPErrDict.Add("UART", DateTime.Now);
+                                if(!result.IPErrDict.ContainsKey("UART"))
+                                    result.IPErrDict.Add("UART", DateTime.Now);
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.ADC % 8)))
                             {
                                 result.IP.Exception = true;
                                 //TestInfo.IPExceptionFirstTime = DateTime.Now;
-                                if (!TestInfo.IPErrDict.ContainsKey("ADC"))
-                                    TestInfo.IPErrDict.Add("ADC", DateTime.Now);
+                                if (!result.IPErrDict.ContainsKey("ADC"))
+                                    result.IPErrDict.Add("ADC", DateTime.Now);
                             }
                             break;
                     }
                 }
+
+                Thread.Sleep(100);
             }
            
         }
@@ -385,6 +368,7 @@ namespace CommPort
                 ROMErrDict.Clear();
                 //ROMErrDict.Clear();
                 TRIMValue = 0;
+                IPValue = 0;
                 IPErrDict = new Dictionary<string, DateTime>();
                 IPErrDict.Clear();
                 //IPErrDict.Clear();
@@ -458,10 +442,10 @@ namespace CommPort
             public ResultInfo ROM { get; set; } 
             public ResultInfo TRIM { get; set; } 
             public ResultInfo IP { get; set; }
-            public static Dictionary<string, DateTime> ROMErrDict = new Dictionary<string, DateTime>();
+            public  Dictionary<string, DateTime> ROMErrDict = new Dictionary<string, DateTime>();
             public  UInt32 TRIMValue { get; set; }
             public  UInt32 IPValue { get; set; }
-            public static Dictionary<string, DateTime> IPErrDict=new Dictionary<string, DateTime>();
+            public  Dictionary<string, DateTime> IPErrDict=new Dictionary<string, DateTime>();
         }
         public class ResultInfo
         {
@@ -501,34 +485,30 @@ namespace CommPort
             BT = 0x04,
             LPT = 0x05,
             RTC = 0x06,
-            DROM_READ = 0x07,
-
-            PROM_READ = 0x08,
-            CAN = 0x09,
-            RESERVED0 = 0x0A,
-            DROM_WRITE = 0x0B,
-            PROM_WRITE = 0x0C,
+            CAN = 0x07,
+                     
             //TRIM异常
-            REV_CODE = 0x0D,
-            UID = 0x0E,
-            BGR_CMR = 0xF,
+            REV_CODE = 0x0B,
+            UID = 0x0C,
+            BGR_CMR = 0xD,
+            IMOSC = 0x0E,
+            HF_EF = 0x0F,
+            ISOSC = 0x10,
+            FVR = 0x11,
+            ADC_OFC = 0x12,
+            OSC5 = 0x13,
+            BUF = 0x14,
+            FCP = 0x15,
+            CP2 = 0x16,
+            CP3 = 0x17,
+            FT = 0x18,
+            OPAN = 0x19,
+            OPAP = 0x1A,
 
-            IMOSC = 0x10,
-            HF_EF = 0x11,
-            ISOSC = 0x12,
-            FVR = 0x13,
-            ADC_OFC = 0x14,
-            OSC5 = 0x15,
-            BUF = 0x16,
-            FCP = 0x17,
+            //ROM(DROM/PROM)
+            DROM_READ = 0x1D,
+            PROM_READ = 0x1E,
 
-            CP2 = 0x18,
-            CP3 = 0x19,
-            FT = 0x1A,
-            OPAN = 0x1B,
-            OPAP = 0x1C,
-            RESERVED1 = 0x1D,
-            RESERVED2 = 0x1E,
             //EFLASH校验异常
             EFLASH = 0x1F,
         }
