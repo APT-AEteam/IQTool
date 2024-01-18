@@ -8,11 +8,6 @@
     <Setting Name="end" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">69</Value>
     </Setting>
-    <Setting Name="readAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0x20000200</Value>
-    </Setting>
-    <Setting Name="writeAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0x20000204</Value>
-    </Setting>
+
   </Settings>
 </SettingsFile>

@@ -46,29 +46,5 @@ namespace TempTool.Properties {
                 this["end"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0x20000200")]
-        public string readAddress {
-            get {
-                return ((string)(this["readAddress"]));
-            }
-            set {
-                this["readAddress"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0x20000204")]
-        public string writeAddress {
-            get {
-                return ((string)(this["writeAddress"]));
-            }
-            set {
-                this["writeAddress"] = value;
-            }
-        }
     }
 }

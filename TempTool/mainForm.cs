@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -82,21 +83,27 @@ namespace IQT
         }
         private void mainForm_Load(object sender, EventArgs e)
         {
+            ResultInfo.OverallStatus = true;
             port = new COMPORT();
             port.UpdateStatus += UpdateTestStatus;
             port.UpdatePortRecord += UpdatePortRecord;
             port.UpdateLogRecord += UpdateLogRecord;
-            if (port.ScanComPort(2, 1, 1))
+
+            port.ScanComPort(2, 1, 1);
+            for (int i = 0; i < port.lSpecialComPorts.Count; i++)
             {
-                SerialPortCbx.Items.Add( port.PortName );
+                SerialPortCbx.Items.Add(port.lSpecialComPorts[i].PortName);
             }
-            if(0 != SerialPortCbx.Items.Count)
-            {
-                SerialPortCbx.SelectedIndex = 0;
-                port.PortName = SerialPortCbx.Text;
-                if(!port.Open())
-                    MessageBox.Show("串口打开失败,可能被占用,请检查");
-            }
+
+            //if (port.ScanComPort(2, 1, 1))
+            //{
+            //    SerialPortCbx.Items.Add( port.PortName );
+            //}
+
+
+            tabPage1.Show();
+            WarnTbCtl.SelectedIndex = 1;
+            
             InitGDV();
             Number_ValueChanged(null, null);
             gridView.CellPainting += GridView_CellPainting;
@@ -112,11 +119,11 @@ namespace IQT
             contextMenu1.MenuItems.Add(clearMenuItem1);  
             ErrorLogRtbx.ContextMenu = contextMenu1;
 
-            StartNumber.Value = TempTool.Properties.Settings.Default.start;
-            EndNumber.Value = TempTool.Properties.Settings.Default.end;
+            //StartNumber.Value = TempTool.Properties.Settings.Default.start;
+            //EndNumber.Value = TempTool.Properties.Settings.Default.end;
 
-            ReadAddressTbx.Text = TempTool.Properties.Settings.Default.readAddress;
-            WriteAddressTbx.Text = TempTool.Properties.Settings.Default.writeAddress;
+            //ReadAddressTbx.Text = TempTool.Properties.Settings.Default.readAddress;
+            //WriteAddressTbx.Text = TempTool.Properties.Settings.Default.writeAddress;
 
             autoTestThread = new Thread(() =>
             {
@@ -128,7 +135,7 @@ namespace IQT
                         testFlag = true;
                     }
                     Thread.Sleep(200);
-
+                    //定时时间到，即开始新一轮读取
                     if(testFlag)
                         StartTest(null, null);
                 }
@@ -292,7 +299,7 @@ namespace IQT
             string errMsg = string.Empty;
             byte[] cmd;
             cmd = PackCmd(OperaType.REPOST,  PackBoardControlCmd(0x68, (byte)portNumber));
-            port.SendData(cmd,ref errMsg);
+            port.SendData(cmd,ref errMsg);        
             currentNumber = portNumber;
         }
         void ClosePort(uint portNumber)
@@ -300,12 +307,12 @@ namespace IQT
             string errMsg = string.Empty;
             byte[] cmd;
             cmd = PackCmd(OperaType.REPOST,  PackBoardControlCmd(0x69, (byte)portNumber));
-            port.SendData(cmd,ref errMsg);
+            port.SendData(cmd, ref errMsg);
         }
 
-        private static byte[] ReadAddress = new byte[4] {  0x20, 0x00, 0x02, 0x00 };
-        private static byte[] WriteAddress = new byte[4] {  0x20, 0x00, 0x02, 0x00 };
-        void SendReadCMD()
+        private static byte[] ReadAddress = new byte[4] {  0x40, 0x01, 0x11, 0x00 };
+        private static byte[] WriteAddress = new byte[4] {  0x40, 0x01, 0x11, 0x04 };
+       void SendReadCMD()
         {
             TestDone = false;
             string errMsg = string.Empty; 
@@ -322,6 +329,7 @@ namespace IQT
             TestDone = false;
             string errMsg = string.Empty; 
             byte[] cmd;
+            
             cmd = PackCmd(OperaType.WRITE, WriteAddress);
             port.SendData(cmd, ref errMsg);
             //Task task = new Task(() =>
@@ -389,13 +397,18 @@ namespace IQT
                         //EFLASH
                         gridView.Rows[0 + offset * 4].Cells[1].Value = "EFLASH";
                         if(testInfo.EFLASH.Exception)
+                        {
                             gridView.Rows[0 + offset * 4].Cells[3].Value = TestInfo.EFLASHExceptionFirstTime.ToString();
+                            ResultInfo.OverallStatus = false;
+                        }
+                            
                         gridView.Rows[0 + offset * 4].Cells[4].Value = testInfo.EFLASH.Exception ? "FAIL" : "PASS";
                         gridView.Rows[0 + offset * 4].Cells[4].Style.BackColor = testInfo.EFLASH.Exception ? Color.OrangeRed : Color.GreenYellow;
                         //ROM
                         gridView.Rows[1 + offset * 4].Cells[1].Value = "ROM";
                         if (testInfo.ROM.Exception)
                         {
+                            ResultInfo.OverallStatus = false;
                             string errTypeStr = string.Empty;
                             string errDateTimeStr = string.Empty;
                             foreach (var item in testInfo.ROMErrDict)
@@ -414,13 +427,18 @@ namespace IQT
                         gridView.Rows[2 + offset * 4].Cells[1].Value = "TRIM";
                         gridView.Rows[2 + offset * 4].Cells[2].Value = testInfo.TRIM.Exception?string.Format("VALUE:0x{0}", testInfo.TRIMValue.ToString("X2").PadLeft(8,'0')):string.Empty;
                         if(testInfo.TRIM.Exception)
+                        {
                             gridView.Rows[2 + offset * 4].Cells[3].Value = TestInfo.TRIMExceptionFirstTime.ToString();
+                            ResultInfo.OverallStatus = false;
+                        }
+                            
                         gridView.Rows[2 + offset * 4].Cells[4].Value = testInfo.TRIM.Exception ? "FAIL" : "PASS";
                         gridView.Rows[2 + offset * 4].Cells[4].Style.BackColor = testInfo.TRIM.Exception ? Color.OrangeRed : Color.GreenYellow;
                         //IP
                         gridView.Rows[3 + offset * 4].Cells[1].Value = "IP";
                         if (testInfo.IP.Exception)
                         {
+                            ResultInfo.OverallStatus = false;
                             string errTypeStr = string.Empty;
                             string errDateTimeStr = string.Empty;
                             foreach (var item in testInfo.IPErrDict)
@@ -433,13 +451,13 @@ namespace IQT
                             gridView.Rows[3 + offset * 4].Cells[3].Value =  TestInfo.IPExceptionFirstTime.ToString();
                         }
                         else
-                            ;
+                            
                             //gridView.Rows[3 + offset * 4].Cells[3].Value = TestInfo.IPExceptionFirstTime.ToString();
                         gridView.Rows[3 + offset * 4].Cells[4].Value = testInfo.IP.Exception ? "FAIL" : "PASS";
                         gridView.Rows[3 + offset * 4].Cells[4].Style.BackColor = testInfo.IP.Exception ? Color.OrangeRed : Color.GreenYellow;
                         
                         //LABEL显示单次结果
-                        if (testInfo.EFLASH.Exception ||testInfo.ROM.Exception || testInfo.TRIM.Exception || testInfo.IP.Exception)
+                        if (ResultInfo.OverallStatus == false)
                         {
                             StatusLabel.Text = "FAIL";
                             StatusLabel.BackColor = Color.OrangeRed;
@@ -589,11 +607,13 @@ namespace IQT
         }
         private void SerialPortCbx_DropDown(object sender, EventArgs e)
         {
-            SerialPortCbx.Items.Clear();
-            if (port.ScanComPort(2, 1, 1))
-            {
-                SerialPortCbx.Items.Add(port.PortName);
-            }
+            //SerialPortCbx.Items.Clear();
+            //if (port.ScanComPort(2, 1, 1))
+            //{
+            //    SerialPortCbx.Items.Add(port.PortName);
+            //}
+            
+
         }
 
         private void SerialPortCbx_SelectedIndexChanged(object sender, EventArgs e)
@@ -647,8 +667,14 @@ namespace IQT
             }
         }
 
+        [Obsolete]
         private void StartTest(object sender, EventArgs e)
         {
+            EnterTestmodeBtn.BackColor = Color.Gray;
+            ExitTestmodeBtn.BackColor = Color.Gray;
+            StartBtn.BackColor = Color.Blue;
+            PauseBtn.BackColor = Color.Gray;
+
             for (int i = 0; i < gridView.Rows.Count - 1; i++)
             {
                 gridView.Rows[i].Cells[5].Value = null;
@@ -664,9 +690,12 @@ namespace IQT
             }
             for (uint i = startNumber; i <= endNumber; i++)
             {
+                COMPORT.bDataReceived = false;
                 OpenPort(i);
-                Thread.Sleep(200);
+                while (!COMPORT.bDataReceived) ;
+                COMPORT.bDataReceived = false;
                 SendReadCMD();
+                while (!COMPORT.bDataReceived) ;
             }
             testFlag = false;
             Thread thread = new Thread(() =>
@@ -676,7 +705,6 @@ namespace IQT
                     this.Invoke(new Action(() =>
                     {
                         StartBtn.Text = "测试中";
-                        StartBtn.BackColor = Color.LightGoldenrodYellow;
                         StartBtn.Enabled = false;
                     }));
                 }
@@ -690,6 +718,11 @@ namespace IQT
         }
         private void PauseBtn_Click(object sender, EventArgs e)
         {
+            EnterTestmodeBtn.BackColor = Color.Gray;
+            ExitTestmodeBtn.BackColor = Color.Gray;
+            StartBtn.BackColor = Color.Gray;
+            PauseBtn.BackColor = Color.Blue;
+
             Thread thread = new Thread(() =>
             {
                 if (this.InvokeRequired)
@@ -697,8 +730,7 @@ namespace IQT
                     this.Invoke(new Action(() =>
                     {
 
-                        StartBtn.Text = "开始";
-                        StartBtn.BackColor = Color.DarkSeaGreen;
+                        StartBtn.Text = "2、开始";
                         StartBtn.Enabled = true;
                     }));
                 }
@@ -754,9 +786,9 @@ namespace IQT
                     thread.IsBackground = true;
                     thread.Start();
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
-
+                    throw;
                 }
             }
         }
@@ -779,18 +811,7 @@ namespace IQT
         }
         private void WriteAddressTbx_TextChanged(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(WriteAddressTbx.Text.Trim()))
-                return;
-            string addressStr = WriteAddressTbx.Text.Trim();
-            string pattern = @"^0x[A-Fa-f0-9]+$";
-            if (!System.Text.RegularExpressions.Regex.IsMatch(addressStr, pattern))
-            {
-                WriteAddressTbx.Text="0x";
-                return;
-            }
-            addressStr = WriteAddressTbx.Text.Trim().Substring(2).PadLeft(8, '0');
-            byte[] addres = HexStrToBytes(addressStr);
-            WriteAddress = addres;
+            
         }
 
         public static byte[] HexStrToBytes(string hexString)
@@ -817,23 +838,38 @@ namespace IQT
 
         private void EnterTestmode(object sender, EventArgs e)
         {
+            EnterTestmodeBtn.BackColor = Color.Blue;
+            ExitTestmodeBtn.BackColor = Color.Gray;
+            StartBtn.BackColor = Color.Gray;
+            PauseBtn.BackColor = Color.Gray;
+
+            tabPage3.Show();
+            WarnTbCtl.SelectedIndex = 0;
             ModeFrame = new byte[4] { 0x55, 0xAA, 0x66, 0xBB };
-            //boardNumberQueue = new Queue<uint>();
-            //for (uint i = startNumber; i <= endNumber; i++)
-            //{
-            //    boardNumberQueue.Enqueue(i);
-            //}
+            boardNumberQueue = new Queue<uint>();
+            for (uint i = startNumber; i <= endNumber; i++)
+            {
+                boardNumberQueue.Enqueue(i);
+            }
 
             for (uint i = startNumber; i <= endNumber; i++)
             {
+                COMPORT.bDataReceived = false;
                 OpenPort(i);
-                Thread.Sleep(200);
+                while (!COMPORT.bDataReceived) ;
+                COMPORT.bDataReceived = false;
                 SendWriteCMD();
+                while (!COMPORT.bDataReceived) ;
             }
         }
 
         private void ExitTestmodeBtn_Click(object sender, EventArgs e)
         {
+            EnterTestmodeBtn.BackColor = Color.Gray;
+            ExitTestmodeBtn.BackColor = Color.Blue;
+            StartBtn.BackColor = Color.Gray;
+            PauseBtn.BackColor = Color.Gray;
+
             ModeFrame = new byte[4]{ 0x00, 0x00, 0x00, 0x00 };
             boardNumberQueue = new Queue<uint>();
             for (uint i = startNumber; i <= endNumber; i++)
@@ -843,9 +879,12 @@ namespace IQT
 
             for (uint i = startNumber; i <= endNumber; i++)
             {
-                OpenPort(i);
-                Thread.Sleep(200);
+                COMPORT.bDataReceived = false;
+                OpenPort(i);            
+                while (!COMPORT.bDataReceived) ;
+                COMPORT.bDataReceived = false;
                 SendWriteCMD();
+                while (!COMPORT.bDataReceived) ;
             }
         }
 
@@ -854,8 +893,8 @@ namespace IQT
             TempTool.Properties.Settings.Default.start = (int)StartNumber.Value;
             TempTool.Properties.Settings.Default.end = (int)EndNumber.Value;
 
-            TempTool.Properties.Settings.Default.readAddress = ReadAddressTbx.Text;
-            TempTool.Properties.Settings.Default.writeAddress = WriteAddressTbx.Text;
+            //TempTool.Properties.Settings.Default.readAddress = ReadAddressTbx.Text;
+            //TempTool.Properties.Settings.Default.writeAddress = WriteAddressTbx.Text;
             TempTool.Properties.Settings.Default.Save();
 
             Dispose();
@@ -863,21 +902,7 @@ namespace IQT
         }
 
         private static byte[] setModel = new byte[4] {  0x00, 0x00, 0x00, 0x00 };
-        private void ModelTbx_TextChanged(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(ModelTbx.Text.Trim()))
-                return;
-            string modelStr = ModelTbx.Text.Trim();
-            string pattern = @"^0x[A-Fa-f0-9]+$";
-            if (!System.Text.RegularExpressions.Regex.IsMatch(modelStr, pattern))
-            {
-                ModelTbx.Text="0x";
-                return;
-            }
-            modelStr = ModelTbx.Text.Trim().Substring(2).PadRight(8, '0');
-            byte[] model = HexStrToBytes(modelStr);
-            setModel = model;
-        }
+ 
 
         private void SetModel(object sender, EventArgs e)
         {
@@ -890,6 +915,80 @@ namespace IQT
         private void ReadModelBtn_Click(object sender, EventArgs e)
         {
 
+        }
+
+ 
+
+        private void SetStatusAddr_click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(ReadAddressTbx.Text.Trim()))
+                return;
+            string addressStr = ReadAddressTbx.Text.Trim();
+            string pattern = @"^0x[A-Fa-f0-9]+$";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(addressStr, pattern))
+            {
+                ReadAddressTbx.Text = "0x";
+                return;
+            }
+            addressStr = ReadAddressTbx.Text.Trim().Substring(2).PadLeft(8, '0');
+            byte[] addres = HexStrToBytes(addressStr);
+            ReadAddress = addres;
+        }
+
+        private void SetModeCtrl_click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(WriteAddressTbx.Text.Trim()))
+                return;
+            string addressStr = WriteAddressTbx.Text.Trim();
+            string pattern = @"^0x[A-Fa-f0-9]+$";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(addressStr, pattern))
+            {
+                WriteAddressTbx.Text = "0x";
+                return;
+            }
+            addressStr = WriteAddressTbx.Text.Trim().Substring(2).PadLeft(8, '0');
+            byte[] addres = HexStrToBytes(addressStr);
+            WriteAddress = addres;
+        }
+
+        private void SetModel_click(object sender, EventArgs e)
+        {
+            string errMsg = string.Empty;
+            byte[] cmd;
+
+            if (string.IsNullOrEmpty(ModelTbx.Text.Trim()))
+                return;
+            string modelStr = ModelTbx.Text.Trim();
+            string pattern = @"^0x[A-Fa-f0-9]+$";
+            if (!System.Text.RegularExpressions.Regex.IsMatch(modelStr, pattern))
+            {
+                ModelTbx.Text = "0x";
+                return;
+            }
+            modelStr = ModelTbx.Text.Trim().Substring(2).PadRight(8, '0');
+            byte[] model = HexStrToBytes(modelStr);
+            setModel = model;
+
+            cmd = PackCmd(OperaType.SETMODEL, setModel);
+             port.SendData(cmd, ref errMsg);
+        }
+
+        private void BtnConnect_Click(object sender, EventArgs e)
+        {
+            int item = 0;
+            if (0 != SerialPortCbx.Items.Count)
+            {
+                item = SerialPortCbx.SelectedIndex;
+                port.PortName = SerialPortCbx.Text;
+                
+
+
+                if (!port.Open())
+                    MessageBox.Show("串口打开失败,可能被占用,请检查");
+                else
+                    MessageBox.Show("串口成功打开" );
+                MessageBox.Show(string.Format("{0}", port.PortName));
+            }
         }
     }
 }
