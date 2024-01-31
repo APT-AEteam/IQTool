@@ -7,7 +7,7 @@
     <ProjectGuid>{849E5026-F82A-47EA-B633-82FF82F2F219}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>TempTool</RootNamespace>
-    <AssemblyName>TempTool</AssemblyName>
+    <AssemblyName>IQToolv1.0</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

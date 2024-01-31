@@ -127,7 +127,7 @@ namespace CommPort
             {
                 if (0x02 == OperationResult)//芯片连接异常
                 {
-                    UpdateLogRecord("连接异常");
+                    UpdateLogRecord("请检查连接");
                     IQT.mainForm.ReTest = true;
                 }
                 else
@@ -685,107 +685,8 @@ namespace CommPort
             TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return Convert.ToInt64(ts.TotalSeconds).ToString();
         }
-        /// <summary> 
-        /// 获取api token  
-        /// </summary>  
-        /// <returns></returns> 
-        private string GetApi_token()
-        {
-            sEpoch = GetTimeStamp();
-            string api_token_BeforeMD5 = sEpoch + api_secret;
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-
-            byte[] bytValue, bytHash;
-            bytValue = Encoding.Default.GetBytes(api_token_BeforeMD5);
-            bytHash = md5.ComputeHash(bytValue);
-            md5.Clear();
-
-            string sTemp = "";
-            for (int i = 0; i < bytHash.Length; i++)
-            {
-                sTemp += bytHash[i].ToString("X").PadLeft(2, '0');
-            }
-
-            return sTemp.ToLower();
-        }
-        /// <summary> 
-        /// 海外版绑定
-        /// </summary>  
-        /// <returns>
-        /// TRUE:绑定成功
-        /// FALSE:失败
-        /// </returns> 
-        public bool QRBind_EXT(string strQR, string strSIM, out int outErrCode, out string outErrMessage)
-        {
-            outErrCode = 0;
-            outErrMessage = "";
-
-            if ((strQR.Length <= 0) || (strSIM.Length <= 0))
-            {
-                outErrMessage = "参数错误";
-                outErrCode = 400;
-                return false;
-            }
-
-            string sURL = START_BIND_URL_EXT;
-            sURL = sURL.Replace("%API_TOKEN", GetApi_token());
-            sURL = sURL.Replace("%QRCODE", strQR);
-            sURL = sURL.Replace("%SIMCODE", strSIM);
-            sURL = sURL.Replace("%TIME", sEpoch);
-            //创建一个HTTP请求
-            try
-            {
-                HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(sURL);
-                HttpWebResponse webreponse = (HttpWebResponse)webrequest.GetResponse();
-                using (Stream stream = webreponse.GetResponseStream())
-                {
-                    byte[] rsByte = new Byte[webreponse.ContentLength];  //save data in the stream
-
-                    stream.Read(rsByte, 0, (int)webreponse.ContentLength);
-                    string strRs = System.Text.Encoding.UTF8.GetString(rsByte, 0, rsByte.Length).ToString();
-                    stream.Close();
-
-                    strRs = strRs.Replace("\"", "");
-                    if (strRs.Contains(":0"))
-                    {
-                        outErrCode = 0;
-                        outErrMessage = "绑定成功";
-                    }
-                    else if (strRs.Contains(":7110"))
-                    {
-                        outErrCode = 7110;
-                        outErrMessage = "绑定错误";
-                        return false;
-                    }
-                    else if (strRs.Contains(":1221"))
-                    {
-                        outErrCode = 1221;
-                        outErrMessage = "sim 卡号非法";
-                        return false;
-                    }
-                    else if (strRs.Contains(":1211"))
-                    {
-                        outErrCode = 1211;
-                        outErrMessage = "QR code非法";
-                        return false;
-                    }
-                    else
-                    {
-                        outErrCode = 7110;
-                        outErrMessage = "绑定错误";
-                        return false;
-                    }
-                }
-            }
-            catch (Exception exp)
-            {
-                outErrMessage = exp.ToString();
-                outErrCode = 400;
-                return false;
-            }
-
-            return true;
-        }
+    
+     
 
       
     }

@@ -31,9 +31,9 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
             this.WarnTbCtl = new System.Windows.Forms.TabControl();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.ReadMe = new System.Windows.Forms.TabPage();
             this.ErrorLogRtbx = new System.Windows.Forms.RichTextBox();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.TestLog = new System.Windows.Forms.TabPage();
             this.readmeRtbx = new System.Windows.Forms.RichTextBox();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -48,15 +48,16 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.SerialPortCbx = new System.Windows.Forms.ToolStripComboBox();
             this.ToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.ModelGbx = new System.Windows.Forms.GroupBox();
-            this.SetModelBtn = new System.Windows.Forms.Button();
+            this.BtnSetModel = new System.Windows.Forms.Button();
             this.ModelTbx = new System.Windows.Forms.TextBox();
             this.ReadGbx = new System.Windows.Forms.GroupBox();
-            this.PauseBtn = new System.Windows.Forms.Button();
-            this.StartBtn = new System.Windows.Forms.Button();
+            this.BtnPauseRead = new System.Windows.Forms.Button();
+            this.BtnStartRead = new System.Windows.Forms.Button();
             this.TestmodeGbx = new System.Windows.Forms.GroupBox();
-            this.ExitTestmodeBtn = new System.Windows.Forms.Button();
-            this.EnterTestmodeBtn = new System.Windows.Forms.Button();
+            this.BtnExitTestmode = new System.Windows.Forms.Button();
+            this.BtnEnterTestmode = new System.Windows.Forms.Button();
             this.TimeIntervalGbx = new System.Windows.Forms.GroupBox();
             this.Min = new System.Windows.Forms.NumericUpDown();
             this.Hour = new System.Windows.Forms.NumericUpDown();
@@ -83,8 +84,8 @@
             this.PortRecordRtbx = new System.Windows.Forms.RichTextBox();
             this.Splitter = new System.Windows.Forms.Splitter();
             this.WarnTbCtl.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.ReadMe.SuspendLayout();
+            this.TestLog.SuspendLayout();
             this.MenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -117,8 +118,8 @@
             // 
             // WarnTbCtl
             // 
-            this.WarnTbCtl.Controls.Add(this.tabPage3);
-            this.WarnTbCtl.Controls.Add(this.tabPage1);
+            this.WarnTbCtl.Controls.Add(this.ReadMe);
+            this.WarnTbCtl.Controls.Add(this.TestLog);
             this.WarnTbCtl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.WarnTbCtl.Location = new System.Drawing.Point(0, 0);
             this.WarnTbCtl.Name = "WarnTbCtl";
@@ -126,16 +127,16 @@
             this.WarnTbCtl.Size = new System.Drawing.Size(376, 708);
             this.WarnTbCtl.TabIndex = 0;
             // 
-            // tabPage3
+            // ReadMe
             // 
-            this.tabPage3.Controls.Add(this.ErrorLogRtbx);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(368, 682);
-            this.tabPage3.TabIndex = 0;
-            this.tabPage3.Text = "log";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.ReadMe.Controls.Add(this.ErrorLogRtbx);
+            this.ReadMe.Location = new System.Drawing.Point(4, 22);
+            this.ReadMe.Name = "ReadMe";
+            this.ReadMe.Padding = new System.Windows.Forms.Padding(3);
+            this.ReadMe.Size = new System.Drawing.Size(368, 682);
+            this.ReadMe.TabIndex = 0;
+            this.ReadMe.Text = "log";
+            this.ReadMe.UseVisualStyleBackColor = true;
             // 
             // ErrorLogRtbx
             // 
@@ -149,15 +150,15 @@
             this.ErrorLogRtbx.TabIndex = 0;
             this.ErrorLogRtbx.Text = "";
             // 
-            // tabPage1
+            // TestLog
             // 
-            this.tabPage1.Controls.Add(this.readmeRtbx);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(368, 682);
-            this.tabPage1.TabIndex = 1;
-            this.tabPage1.Text = "软件使用及测试说明";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.TestLog.Controls.Add(this.readmeRtbx);
+            this.TestLog.Location = new System.Drawing.Point(4, 22);
+            this.TestLog.Name = "TestLog";
+            this.TestLog.Size = new System.Drawing.Size(368, 682);
+            this.TestLog.TabIndex = 1;
+            this.TestLog.Text = "软件使用及测试说明";
+            this.TestLog.UseVisualStyleBackColor = true;
             // 
             // readmeRtbx
             // 
@@ -170,6 +171,7 @@
             this.readmeRtbx.Size = new System.Drawing.Size(368, 682);
             this.readmeRtbx.TabIndex = 1;
             this.readmeRtbx.Text = resources.GetString("readmeRtbx.Text");
+            this.readmeRtbx.TextChanged += new System.EventHandler(this.readmeRtbx_TextChanged);
             // 
             // StatusStrip
             // 
@@ -249,6 +251,7 @@
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.progressBar);
             this.splitContainer2.Panel2.Controls.Add(this.ModelGbx);
             this.splitContainer2.Panel2.Controls.Add(this.ReadGbx);
             this.splitContainer2.Panel2.Controls.Add(this.TestmodeGbx);
@@ -307,9 +310,16 @@
             this.ToolStripSeparator.Name = "ToolStripSeparator";
             this.ToolStripSeparator.Size = new System.Drawing.Size(6, 39);
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(13, 487);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(208, 23);
+            this.progressBar.TabIndex = 0;
+            // 
             // ModelGbx
             // 
-            this.ModelGbx.Controls.Add(this.SetModelBtn);
+            this.ModelGbx.Controls.Add(this.BtnSetModel);
             this.ModelGbx.Controls.Add(this.ModelTbx);
             this.ModelGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.ModelGbx.Location = new System.Drawing.Point(3, 31);
@@ -319,18 +329,18 @@
             this.ModelGbx.TabStop = false;
             this.ModelGbx.Text = "被测芯片型号";
             // 
-            // SetModelBtn
+            // BtnSetModel
             // 
-            this.SetModelBtn.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.SetModelBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.SetModelBtn.Font = new System.Drawing.Font("宋体", 12F);
-            this.SetModelBtn.Location = new System.Drawing.Point(131, 27);
-            this.SetModelBtn.Name = "SetModelBtn";
-            this.SetModelBtn.Size = new System.Drawing.Size(86, 28);
-            this.SetModelBtn.TabIndex = 16;
-            this.SetModelBtn.Text = "0、设置";
-            this.SetModelBtn.UseVisualStyleBackColor = false;
-            this.SetModelBtn.Click += new System.EventHandler(this.SetModel_click);
+            this.BtnSetModel.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.BtnSetModel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnSetModel.Font = new System.Drawing.Font("宋体", 12F);
+            this.BtnSetModel.Location = new System.Drawing.Point(131, 27);
+            this.BtnSetModel.Name = "BtnSetModel";
+            this.BtnSetModel.Size = new System.Drawing.Size(86, 28);
+            this.BtnSetModel.TabIndex = 16;
+            this.BtnSetModel.Text = "0、设置";
+            this.BtnSetModel.UseVisualStyleBackColor = false;
+            this.BtnSetModel.Click += new System.EventHandler(this.SetModel_click);
             // 
             // ModelTbx
             // 
@@ -342,8 +352,8 @@
             // 
             // ReadGbx
             // 
-            this.ReadGbx.Controls.Add(this.PauseBtn);
-            this.ReadGbx.Controls.Add(this.StartBtn);
+            this.ReadGbx.Controls.Add(this.BtnPauseRead);
+            this.ReadGbx.Controls.Add(this.BtnStartRead);
             this.ReadGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.ReadGbx.Location = new System.Drawing.Point(7, 531);
             this.ReadGbx.Name = "ReadGbx";
@@ -352,70 +362,70 @@
             this.ReadGbx.TabStop = false;
             this.ReadGbx.Text = "测试状态回读";
             // 
-            // PauseBtn
+            // BtnPauseRead
             // 
-            this.PauseBtn.BackColor = System.Drawing.Color.PaleGreen;
-            this.PauseBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.PauseBtn.Enabled = false;
-            this.PauseBtn.Font = new System.Drawing.Font("宋体", 12F);
-            this.PauseBtn.Location = new System.Drawing.Point(114, 23);
-            this.PauseBtn.Name = "PauseBtn";
-            this.PauseBtn.Size = new System.Drawing.Size(100, 40);
-            this.PauseBtn.TabIndex = 15;
-            this.PauseBtn.Text = "3、停止";
-            this.PauseBtn.UseVisualStyleBackColor = false;
-            this.PauseBtn.Click += new System.EventHandler(this.PauseBtn_Click);
+            this.BtnPauseRead.BackColor = System.Drawing.Color.Gray;
+            this.BtnPauseRead.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnPauseRead.Enabled = false;
+            this.BtnPauseRead.Font = new System.Drawing.Font("宋体", 12F);
+            this.BtnPauseRead.Location = new System.Drawing.Point(114, 23);
+            this.BtnPauseRead.Name = "BtnPauseRead";
+            this.BtnPauseRead.Size = new System.Drawing.Size(100, 40);
+            this.BtnPauseRead.TabIndex = 15;
+            this.BtnPauseRead.Text = "3、停止";
+            this.BtnPauseRead.UseVisualStyleBackColor = false;
+            this.BtnPauseRead.Click += new System.EventHandler(this.PauseBtn_Click);
             // 
-            // StartBtn
+            // BtnStartRead
             // 
-            this.StartBtn.BackColor = System.Drawing.Color.DarkSeaGreen;
-            this.StartBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.StartBtn.Font = new System.Drawing.Font("宋体", 12F);
-            this.StartBtn.Location = new System.Drawing.Point(6, 23);
-            this.StartBtn.Name = "StartBtn";
-            this.StartBtn.Size = new System.Drawing.Size(100, 40);
-            this.StartBtn.TabIndex = 14;
-            this.StartBtn.Text = "2、开始";
-            this.StartBtn.UseVisualStyleBackColor = false;
-            this.StartBtn.Click += new System.EventHandler(this.StartTest);
+            this.BtnStartRead.BackColor = System.Drawing.Color.Gray;
+            this.BtnStartRead.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnStartRead.Font = new System.Drawing.Font("宋体", 12F);
+            this.BtnStartRead.Location = new System.Drawing.Point(6, 23);
+            this.BtnStartRead.Name = "BtnStartRead";
+            this.BtnStartRead.Size = new System.Drawing.Size(100, 40);
+            this.BtnStartRead.TabIndex = 14;
+            this.BtnStartRead.Text = "2、开始";
+            this.BtnStartRead.UseVisualStyleBackColor = false;
+            this.BtnStartRead.Click += new System.EventHandler(this.StartRead);
             // 
             // TestmodeGbx
             // 
-            this.TestmodeGbx.Controls.Add(this.ExitTestmodeBtn);
-            this.TestmodeGbx.Controls.Add(this.EnterTestmodeBtn);
+            this.TestmodeGbx.Controls.Add(this.BtnExitTestmode);
+            this.TestmodeGbx.Controls.Add(this.BtnEnterTestmode);
             this.TestmodeGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TestmodeGbx.Location = new System.Drawing.Point(7, 459);
+            this.TestmodeGbx.Location = new System.Drawing.Point(7, 414);
             this.TestmodeGbx.Name = "TestmodeGbx";
-            this.TestmodeGbx.Size = new System.Drawing.Size(220, 67);
+            this.TestmodeGbx.Size = new System.Drawing.Size(220, 111);
             this.TestmodeGbx.TabIndex = 18;
             this.TestmodeGbx.TabStop = false;
             this.TestmodeGbx.Text = "测试模式";
             // 
-            // ExitTestmodeBtn
+            // BtnExitTestmode
             // 
-            this.ExitTestmodeBtn.BackColor = System.Drawing.Color.PaleGreen;
-            this.ExitTestmodeBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ExitTestmodeBtn.Font = new System.Drawing.Font("宋体", 12F);
-            this.ExitTestmodeBtn.Location = new System.Drawing.Point(115, 19);
-            this.ExitTestmodeBtn.Name = "ExitTestmodeBtn";
-            this.ExitTestmodeBtn.Size = new System.Drawing.Size(100, 40);
-            this.ExitTestmodeBtn.TabIndex = 16;
-            this.ExitTestmodeBtn.Text = "4、退出";
-            this.ExitTestmodeBtn.UseVisualStyleBackColor = false;
-            this.ExitTestmodeBtn.Click += new System.EventHandler(this.ExitTestmodeBtn_Click);
+            this.BtnExitTestmode.BackColor = System.Drawing.Color.Gray;
+            this.BtnExitTestmode.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnExitTestmode.Font = new System.Drawing.Font("宋体", 12F);
+            this.BtnExitTestmode.Location = new System.Drawing.Point(115, 19);
+            this.BtnExitTestmode.Name = "BtnExitTestmode";
+            this.BtnExitTestmode.Size = new System.Drawing.Size(100, 40);
+            this.BtnExitTestmode.TabIndex = 16;
+            this.BtnExitTestmode.Text = "4、退出";
+            this.BtnExitTestmode.UseVisualStyleBackColor = false;
+            this.BtnExitTestmode.Click += new System.EventHandler(this.ExitTestmodeBtn_Click);
             // 
-            // EnterTestmodeBtn
+            // BtnEnterTestmode
             // 
-            this.EnterTestmodeBtn.BackColor = System.Drawing.Color.DarkSeaGreen;
-            this.EnterTestmodeBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.EnterTestmodeBtn.Font = new System.Drawing.Font("宋体", 12F);
-            this.EnterTestmodeBtn.Location = new System.Drawing.Point(4, 19);
-            this.EnterTestmodeBtn.Name = "EnterTestmodeBtn";
-            this.EnterTestmodeBtn.Size = new System.Drawing.Size(100, 40);
-            this.EnterTestmodeBtn.TabIndex = 15;
-            this.EnterTestmodeBtn.Text = "1、进入";
-            this.EnterTestmodeBtn.UseVisualStyleBackColor = false;
-            this.EnterTestmodeBtn.Click += new System.EventHandler(this.EnterTestmode);
+            this.BtnEnterTestmode.BackColor = System.Drawing.Color.Gray;
+            this.BtnEnterTestmode.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnEnterTestmode.Font = new System.Drawing.Font("宋体", 12F);
+            this.BtnEnterTestmode.Location = new System.Drawing.Point(4, 19);
+            this.BtnEnterTestmode.Name = "BtnEnterTestmode";
+            this.BtnEnterTestmode.Size = new System.Drawing.Size(100, 40);
+            this.BtnEnterTestmode.TabIndex = 15;
+            this.BtnEnterTestmode.Text = "1、进入";
+            this.BtnEnterTestmode.UseVisualStyleBackColor = false;
+            this.BtnEnterTestmode.Click += new System.EventHandler(this.EnterTestmode);
             // 
             // TimeIntervalGbx
             // 
@@ -424,7 +434,7 @@
             this.TimeIntervalGbx.Controls.Add(this.label6);
             this.TimeIntervalGbx.Controls.Add(this.label4);
             this.TimeIntervalGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TimeIntervalGbx.Location = new System.Drawing.Point(2, 377);
+            this.TimeIntervalGbx.Location = new System.Drawing.Point(2, 333);
             this.TimeIntervalGbx.Name = "TimeIntervalGbx";
             this.TimeIntervalGbx.Size = new System.Drawing.Size(226, 76);
             this.TimeIntervalGbx.TabIndex = 17;
@@ -488,10 +498,10 @@
             // 
             this.StatusLabel.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.StatusLabel.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold);
-            this.StatusLabel.Location = new System.Drawing.Point(4, 613);
+            this.StatusLabel.Location = new System.Drawing.Point(13, 613);
             this.StatusLabel.Margin = new System.Windows.Forms.Padding(3, 100, 3, 0);
             this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(225, 30);
+            this.StatusLabel.Size = new System.Drawing.Size(208, 30);
             this.StatusLabel.TabIndex = 16;
             this.StatusLabel.Text = "整板测试状态";
             this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -579,7 +589,7 @@
             this.RangeGbx.Controls.Add(this.EndNumber);
             this.RangeGbx.Controls.Add(this.label3);
             this.RangeGbx.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.RangeGbx.Location = new System.Drawing.Point(3, 268);
+            this.RangeGbx.Location = new System.Drawing.Point(3, 230);
             this.RangeGbx.Name = "RangeGbx";
             this.RangeGbx.Size = new System.Drawing.Size(226, 92);
             this.RangeGbx.TabIndex = 12;
@@ -745,12 +755,12 @@
             this.MainMenuStrip = this.MenuStrip;
             this.Name = "mainForm";
             this.ShowIcon = false;
-            this.Text = "IQT";
+            this.Text = "IQ Tool 用于 双85/105/LTOL/NVCE";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.mainForm_FormClosed);
             this.Load += new System.EventHandler(this.mainForm_Load);
             this.WarnTbCtl.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.ReadMe.ResumeLayout(false);
+            this.TestLog.ResumeLayout(false);
             this.MenuStrip.ResumeLayout(false);
             this.MenuStrip.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -817,10 +827,10 @@
         private System.Windows.Forms.TabControl TestTbCtl;
         private System.Windows.Forms.TabPage SchePage;
         private System.Windows.Forms.TabPage LogPage;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage ReadMe;
         private System.Windows.Forms.RichTextBox ErrorLogRtbx;
-        private System.Windows.Forms.Button PauseBtn;
-        private System.Windows.Forms.Button StartBtn;
+        private System.Windows.Forms.Button BtnPauseRead;
+        private System.Windows.Forms.Button BtnStartRead;
         private System.Windows.Forms.RichTextBox PortRecordRtbx;
         private System.Windows.Forms.ToolStripMenuItem SavePortLog;
         private System.Windows.Forms.Label StatusLabel;
@@ -833,17 +843,18 @@
         private System.Windows.Forms.TextBox WriteAddressTbx;
         private System.Windows.Forms.GroupBox TestmodeGbx;
         private System.Windows.Forms.GroupBox ReadGbx;
-        private System.Windows.Forms.Button ExitTestmodeBtn;
-        private System.Windows.Forms.Button EnterTestmodeBtn;
+        private System.Windows.Forms.Button BtnExitTestmode;
+        private System.Windows.Forms.Button BtnEnterTestmode;
         private System.Windows.Forms.Button BtnSetStatusAddr;
         private System.Windows.Forms.Button BtnSetModeCtrl;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage TestLog;
         private System.Windows.Forms.RichTextBox readmeRtbx;
         private System.Windows.Forms.Button BtnConnect;
         private System.Windows.Forms.GroupBox ModelGbx;
-        private System.Windows.Forms.Button SetModelBtn;
+        private System.Windows.Forms.Button BtnSetModel;
         private System.Windows.Forms.TextBox ModelTbx;
         public System.Windows.Forms.TabControl WarnTbCtl;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }
 
