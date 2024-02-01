@@ -202,7 +202,7 @@ namespace CommPort
                                 result.ROM.Exception = true;
                                 if (!result.ROMErrDict.ContainsKey("PROM"))
                                     result.ROMErrDict.Add("PROM", DateTime.Now);
-                                TestInfo.PROMExceptionFirstTime = DateTime.Now;
+                                TestInfo.ROMExceptionFirstTime = DateTime.Now;
                                 //result.ROM.FirstTime = DateTime.Now;
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.DROM_READ % 8)))
@@ -210,7 +210,7 @@ namespace CommPort
                                 result.ROM.Exception = true;
                                 if (!result.ROMErrDict.ContainsKey("DROM"))
                                     result.ROMErrDict.Add("DROM", DateTime.Now);
-                                TestInfo.DROMExceptionFirstTime = DateTime.Now;
+                                TestInfo.ROMExceptionFirstTime = DateTime.Now;
                                 //result.ROM.FirstTime = DateTime.Now;
                             }
                             if (0 != (exceptionValue & (1 << (byte)ExceptionBitMask.OPAP % 8)))
@@ -384,12 +384,13 @@ namespace CommPort
                 }
             }
             private static DateTime promExceptionFirstTime = DateTime.MaxValue;
-            public static DateTime PROMExceptionFirstTime
+            public static DateTime ROMExceptionFirstTime
             {
                 get { return promExceptionFirstTime; }
                 set
                 {
-                    if (value < PROMExceptionFirstTime& value!= DateTime.MinValue) { 
+                    //if (value < ROMExceptionFirstTime& value!= DateTime.MinValue)
+                    { 
                         promExceptionFirstTime = value;
                     }
                 }
@@ -400,7 +401,7 @@ namespace CommPort
                 get { return dromExceptionFirstTime; }
                 set
                 {
-                    if (value < DROMExceptionFirstTime & value != DateTime.MinValue)
+                    //if (value < DROMExceptionFirstTime & value != DateTime.MinValue)
                     {
                         dromExceptionFirstTime = value;
                     }
@@ -412,7 +413,7 @@ namespace CommPort
                 get { return trimExceptionFirstTime; }
                 set
                 {
-                    if (value < TRIMExceptionFirstTime & value != DateTime.MinValue)
+                    //if (value < TRIMExceptionFirstTime & value != DateTime.MinValue)
                     {
                         trimExceptionFirstTime = value;
                     }
@@ -424,7 +425,7 @@ namespace CommPort
                 get { return ipExceptionFirstTime; }
                 set
                 {
-                    if (value < IPExceptionFirstTime & value != DateTime.MinValue)
+                    //if (value < IPExceptionFirstTime & value != DateTime.MinValue)
                     {
                         ipExceptionFirstTime = value;
                     }

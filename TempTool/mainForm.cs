@@ -278,7 +278,7 @@ namespace IQT
 
             FirstErrorTimeCol = new DataGridViewColumn();
             FirstErrorTimeCol.DataPropertyName = "FirstTimeStamp";
-            FirstErrorTimeCol.HeaderText = "首次异常时间";
+            FirstErrorTimeCol.HeaderText = "RSVD";
             FirstErrorTimeCol.ReadOnly = true;
             FirstErrorTimeCol.SortMode = DataGridViewColumnSortMode.NotSortable;
             FirstErrorTimeCol.Visible = true;
@@ -444,7 +444,8 @@ namespace IQT
                         gridView.Rows[0 + offset * 4].Cells[1].Value = "EFLASH";
                         if (testInfo.EFLASH.Exception)
                         {
-                            gridView.Rows[0 + offset * 4].Cells[3].Value = TestInfo.EFLASHExceptionFirstTime.ToString();
+                            if (gridView.Rows[0 + offset * 4].Cells[3].Value == null)
+                                gridView.Rows[0 + offset * 4].Cells[3].Value = TestInfo.EFLASHExceptionFirstTime.ToString();
                             ResultInfo.OverallStatus = false;
                         }
 
@@ -463,18 +464,22 @@ namespace IQT
                                 errDateTimeStr += item.Value.ToString() + "\r\n";
                             }
                             gridView.Rows[1 + offset * 4].Cells[2].Value = errTypeStr.Trim('\n').Trim('\r');
-                            //gridView.Rows[1 + offset * 4].Cells[3].Value = errDateTimeStr.Trim('\n').Trim('\r');
-                            gridView.Rows[1 + offset * 4].Cells[3].Value = string.Format("{0}\r\n{1}", DateTime.MaxValue == TestInfo.PROMExceptionFirstTime ? string.Empty : TestInfo.PROMExceptionFirstTime.ToString(), DateTime.MaxValue == TestInfo.DROMExceptionFirstTime ? string.Empty : TestInfo.DROMExceptionFirstTime.ToString());
+
+                            if (gridView.Rows[1 + offset * 4].Cells[3].Value == null)
+                                gridView.Rows[1 + offset * 4].Cells[3].Value = TestInfo.ROMExceptionFirstTime.ToString();
+
+                            //gridView.Rows[1 + offset * 4].Cells[3].Value = string.Format("{0}\r\n{1}", DateTime.MaxValue == TestInfo.PROMExceptionFirstTime ? string.Empty : TestInfo.PROMExceptionFirstTime.ToString(), DateTime.MaxValue == TestInfo.DROMExceptionFirstTime ? string.Empty : TestInfo.DROMExceptionFirstTime.ToString());
                         }
                         gridView.Rows[1 + offset * 4].Cells[4].Value = testInfo.ROM.Exception ? "FAIL" : "PASS";
                         gridView.Rows[1 + offset * 4].Cells[4].Style.BackColor = testInfo.ROM.Exception ? Color.OrangeRed : Color.GreenYellow;
-                        gridView.Rows[1 + offset * 4].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                        //gridView.Rows[1 + offset * 4].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                         //TRIM
                         gridView.Rows[2 + offset * 4].Cells[1].Value = "TRIM";
                         gridView.Rows[2 + offset * 4].Cells[2].Value = testInfo.TRIM.Exception ? string.Format("VALUE:0x{0}", testInfo.TRIMValue.ToString("X2").PadLeft(8, '0')) : string.Empty;
                         if (testInfo.TRIM.Exception)
                         {
-                            gridView.Rows[2 + offset * 4].Cells[3].Value = TestInfo.TRIMExceptionFirstTime.ToString();
+                            if (gridView.Rows[2 + offset * 4].Cells[3].Value == null)
+                                gridView.Rows[2 + offset * 4].Cells[3].Value = TestInfo.TRIMExceptionFirstTime.ToString();
                             ResultInfo.OverallStatus = false;
                         }
 
@@ -493,8 +498,9 @@ namespace IQT
                                 errDateTimeStr += item.Value.ToString() + "\r\n";
                             }
                             gridView.Rows[3 + offset * 4].Cells[2].Value = errTypeStr.Trim('\n').Trim('\r');
-                            //gridView.Rows[3 + offset * 4].Cells[3].Value = errDateTimeStr.Trim('\n').Trim('\r');
-                            gridView.Rows[3 + offset * 4].Cells[3].Value = TestInfo.IPExceptionFirstTime.ToString();
+                            
+                            if (gridView.Rows[3 + offset * 4].Cells[3].Value == null)
+                                gridView.Rows[3 + offset * 4].Cells[3].Value = TestInfo.IPExceptionFirstTime.ToString();
                         }
                         else
 
